@@ -5,7 +5,7 @@ from forms import HealthDataForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'secret_key')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('POSTGRES_URI')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('POSTGRES_URI', 'sqlite:///health_data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -19,9 +19,8 @@ class HealthData(db.Model):
 
     def __repr__(self):
         return f'<HealthData {self.id}>'
-    
-@app.before_first_request
-def create_tables():
+
+with app.app_context():
     db.create_all()
 
 @app.route('/')
